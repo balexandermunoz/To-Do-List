@@ -1,0 +1,144 @@
+:root { /* Some important variables */
+    --header-color: #333333;
+    --footer-color: ##EEEEEE;
+    --left-color: #DDDDDD;
+    --main-color: white;
+  }
+
+*{
+    margin: 1.2px;
+    box-sizing: border-box;
+    color: whitesmoke;
+}
+
+body {
+    background: #13141b;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    background: var(--header-color);
+    padding: 1em 0 1em 0;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 1em 3em;
+}
+
+header img {
+    margin-right: 20px;
+    width: 40px;
+}
+
+.main {
+    display: flex;
+    flex: 1;
+}
+
+.left{
+    background: var(--left-color);
+    padding: 2em 0 2em 0;
+    flex: 1 1 0; /* 1 1 100px */
+    
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+main {
+    background: var(--main-color);
+    padding: 2em 0 2em 0;
+    flex: 3 3 100px;
+}
+
+.main * {
+    color: black;
+}
+
+.addTask {
+    margin-top: 10px;
+}
+
+.tasks {
+    margin-top: 20px;
+}
+
+.task {
+    margin-top: 10px;
+    padding: 0;
+    border-left: 5px ridge rgba(50, 220, 64, 0.6);
+    list-style-type: none;
+}
+
+.project {
+    padding: 4px 10px;
+    text-align: left;
+}
+
+.project:hover {
+    cursor: pointer;
+}
+
+.new_todo {
+    background-color: gray;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+textarea {
+    resize: none;
+  }
+
+.add_btn {
+    padding: 5px;
+    border-radius: 30px;
+    background-color: rgba(128, 128, 128, 0.466);
+}
+
+.add_btn:hover {
+    cursor: pointer;
+    background-color: rgb(128, 128, 128);
+}
+
+.add_btn img {
+    width: 20px;
+}
+
+footer {
+    background: var(--footer-color);
+    font-size: 15px;
+}
+
+
+/* Style all social media icons */
+.fa {
+    padding: 5px;
+    font-size: 15px;
+    width: 25px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 50%;
+  }
+  
+  .fa:hover {
+      opacity: 0.7;
+  }
+
+  .fa-linkedin {
+    background: #007bb5;
+    color: white;
+  }
+
+  .fa-instagram {
+    background: #125688;
+    color: white;
+  }
+
+  .fa-github{
+    background: gray;
+    color: white;
+  }
