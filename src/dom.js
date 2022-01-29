@@ -7,28 +7,19 @@ import Sortable from 'sortablejs'; //Sorteable lists!
 //Today in 'yyyy-MM-dd':
 const currentDate = format(new Date(),'yyyy-MM-dd')
 
-//Initialize things with 1 User, 3 projects inside and one task for each project. 
-const newUser = new user();
-const project1 = new Project('Project 1');
-const project2 = new Project('Project 2');
-const project3 = new Project('Project 3');
-
-const task1 = new Task('Example task 0', 'This is a example task','Normal',currentDate);
-const task2 = new Task('Example task 1', 'This is a example task','Important', currentDate);
-const task3 = new Task('Example task 2', 'This is a example task', 'Urgent', currentDate);
-
-project1.addTask(task1);
-project1.addTask(task2);
-project1.addTask(task3);
-project2.addTask(task2);
-project3.addTask(task3);
-
-newUser.addProject(project1)
-newUser.addProject(project2)
-newUser.addProject(project3)
+//Storage things: 
+let newUser;
+if (user.storageAvailable('localStorage')) {
+    console.log('Aviliable local storage!');
+    newUser = user.checkStorage('User');
+}
+else {
+    console.log('Your data will be deleted after close this page.')
+    newUser = user.createDefaultInstance();
+}
 
 showProjects(newUser);
-showTasks(project1);
+showTasks(newUser.projects[0]);
 
 const ul = document.querySelector('.tasks');
 let sortable = new Sortable(ul,{
@@ -93,6 +84,8 @@ function showTasks(project){
         li.id = j;  //For sort purposes
         li.append(checkbox,p,date,deleteIcon);
         ul.appendChild(li);
+
+        user.setUserData( 'User', newUser );
     }
 }
 
