@@ -1,7 +1,8 @@
 import Task from "./tasks";
 import Project from "./projects";
 import user from "./user";
-import { format, compareAsc } from 'date-fns'
+import { format } from 'date-fns' //Dates
+import Sortable from 'sortablejs'; //Sorteable lists!
 
 //Today in 'yyyy-MM-dd':
 const currentDate = format(new Date(),'yyyy-MM-dd')
@@ -12,11 +13,13 @@ const project1 = new Project('Project 1');
 const project2 = new Project('Project 2');
 const project3 = new Project('Project 3');
 
-const task1 = new Task('Example task 1', 'This is a example task','Normal',currentDate);
-const task2 = new Task('Example task 2', 'This is a example task','Important', currentDate);
-const task3 = new Task('Example task 3', 'This is a example task', 'Urgent', currentDate);
+const task1 = new Task('Example task 0', 'This is a example task','Normal',currentDate);
+const task2 = new Task('Example task 1', 'This is a example task','Important', currentDate);
+const task3 = new Task('Example task 2', 'This is a example task', 'Urgent', currentDate);
 
 project1.addTask(task1);
+project1.addTask(task2);
+project1.addTask(task3);
 project2.addTask(task2);
 project3.addTask(task3);
 
@@ -25,7 +28,21 @@ newUser.addProject(project2)
 newUser.addProject(project3)
 
 showProjects(newUser);
-showTasks(0,newUser);
+showTasks(project1);
+
+const ul = document.querySelector('.tasks');
+let sortable = new Sortable(ul,{
+    animation: 200,
+    ghostClass:'ghost',
+    onEnd: function(event){
+        let currProject = document.querySelector('.project-title').textContent;
+        currProject = newUser.projects.find(e=>e.name===currProject);
+        let arrayNodes = [...event.from.childNodes];
+        let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id))
+        currProject.sortTasks(arrayNodesIdx);
+        showTasks(currProject)
+    }
+})
 
 function showProjects(user) {
     const div = document.querySelector('.projects');
@@ -34,29 +51,47 @@ function showProjects(user) {
         let project = document.createElement('h3');
         project.classList.add('project')
         project.textContent = user.projects[i].name;  
-        project.addEventListener('click',showTasks.bind(this,i,user))
+        project.addEventListener('click',showTasks.bind(this,user.projects[i]))
         div.appendChild(project)
     }
 }
 
-function showTasks(i,user){
+function showTasks(project){
     const ul = document.querySelector('.tasks');
     const title = document.querySelector('.project-title');
-    title.textContent = user.projects[i].name;
+    title.textContent = project.name;
     ul.innerHTML = '';
-    for(let j = 0; j<user.projects[i].tasksArray.length; j++){
+    for(let j = 0; j<project.tasksArray.length; j++){
         const li = document.createElement('li');
         const checkbox = document.createElement('input');
         const p = document.createElement('p');
         const date = document.createElement('p');
-        const priority = user.projects[i].tasksArray[j].priority;
-        
+        const deleteIcon = document.createElement('img');
+        const priority = project.tasksArray[j].priority;
+        project.tasksArray[j].idx = j;
+    
         checkbox.type = 'checkbox';
-        p.textContent = user.projects[i].tasksArray[j].name;
-        date.textContent = user.projects[i].tasksArray[j].date;
+        checkbox.checked = project.tasksArray[j].checked;
+        if(checkbox.checked) p.classList.add('checkedTask');
+        else if (!checkbox.checked && p.classList.contains('checkedTask')) p.classList.remove('checkedTask');
 
+        checkbox.addEventListener('click',() => {
+            project.tasksArray[j].toggleCheck();
+            showTasks(project)
+            });
+        p.textContent = project.tasksArray[j].name;
+
+        date.textContent = project.tasksArray[j].date;
+        deleteIcon.classList.add('deleteIcon')
+        deleteIcon.src = 'images/delete2.png';
+
+        deleteIcon.addEventListener('click',() => {
+             project.deleteTask(project.tasksArray[j]);
+             showTasks(project);
+            });
         li.classList.add('task',`priority-${priority}`);
-        li.append(checkbox,p,date);
+        li.id = j;  //For sort purposes
+        li.append(checkbox,p,date,deleteIcon);
         ul.appendChild(li);
     }
 }
@@ -163,7 +198,7 @@ function displayAddTask(){
 
     const p = document.createElement('p'); //This is for the error or check mesage
     p.textContent = '';
-    p.classList.add('task-error-msg')
+    p.classList.add('task-error-msg');
 
     const divPriority = document.createElement('div');
     const urgentButton =  document.createElement('input');
@@ -198,7 +233,6 @@ function acceptTask() {
     const p = document.querySelector('.task-error-msg');
 
     let currProject = document.querySelector('.project-title').textContent;
-    let currProjectIdx = newUser.projects.findIndex(e=>e.name===currProject);
     currProject = newUser.projects.find(e=>e.name===currProject);
 
     let msg = currProject.addTask(new Task(title,description,priority,date)) //Return error mesage or "Done!"
@@ -206,7 +240,7 @@ function acceptTask() {
   
     if (msg !== 'Done!') return
 
-    showTasks(currProjectIdx,newUser);
+    showTasks(currProject);
     closeTask();
 }
 

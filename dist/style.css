@@ -58,7 +58,12 @@ main {
 }
 
 ul {
-    padding: 0 40px 0 100px;
+    padding: 0 40px 0 40px;
+}
+
+.ghost {
+    opacity: .5;
+    background: #C8EBFB;
 }
 
 .addTask {
@@ -76,6 +81,15 @@ ul {
     margin-top: 10px;
     padding: 0;
     list-style-type: none;
+}
+
+.checkedTask {
+    color: rgba(0, 0, 0, 0.486);
+    text-decoration: line-through;
+}
+
+.deleteIcon{
+    width: 15px;
 }
 
 .priority-Normal {
