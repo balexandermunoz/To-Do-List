@@ -46,14 +46,17 @@ function showTasks(i,user){
     ul.innerHTML = '';
     for(let j = 0; j<user.projects[i].tasksArray.length; j++){
         const li = document.createElement('li');
+        const checkbox = document.createElement('input');
         const p = document.createElement('p');
         const date = document.createElement('p');
-
+        const priority = user.projects[i].tasksArray[j].priority;
+        
+        checkbox.type = 'checkbox';
         p.textContent = user.projects[i].tasksArray[j].name;
         date.textContent = user.projects[i].tasksArray[j].date;
 
-        li.classList.add('task');
-        li.append(p,date);
+        li.classList.add('task',`priority-${priority}`);
+        li.append(checkbox,p,date);
         ul.appendChild(li);
     }
 }
@@ -135,7 +138,7 @@ function closeProject() {
 
 //Tasks:
 function displayAddTask(){
-    const addButton = document.querySelector('.addToDo');
+    const addButton = document.querySelector('.addTask');
     addButton.remove();
 
     const toDos = document.querySelector('.tasks');
@@ -177,7 +180,7 @@ function displayAddTask(){
     normalButton.name = 'priority';
 
     urgentButton.value = 'Urgent';
-    importatButton.value = 'Importan';
+    importatButton.value = 'Important';
     normalButton.value = 'Normal';
 
     divPriority.append(urgentButton,importatButton,normalButton,date)
@@ -216,8 +219,8 @@ function closeTask() {
 
     const button = document.createElement('button');
 
-    button.classList.add('add_btn', 'addToDo');
-    main.insertBefore(buttonAdd(displayAddTask,'addToDo'),toDos)
+    button.classList.add('add_btn', 'addTask');
+    main.insertBefore(buttonAdd(displayAddTask,'addTask'),toDos)
 }
 
 export {displayAddTask, displayAddProject};

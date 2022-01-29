@@ -57,6 +57,10 @@ main {
     color: black;
 }
 
+ul {
+    padding: 0 40px 0 100px;
+}
+
 .addTask {
     margin-top: 10px;
 }
@@ -66,10 +70,22 @@ main {
 }
 
 .task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 10px;
     padding: 0;
-    border-left: 5px ridge rgba(50, 220, 64, 0.6);
     list-style-type: none;
+}
+
+.priority-Normal {
+    border-left: 5px ridge rgba(50, 220, 64, 0.6);
+}
+.priority-Important {
+    border-left: 5px ridge rgba(230, 217, 42, 0.6);
+}
+.priority-Urgent {
+    border-left: 5px ridge rgba(220, 50, 50, 0.6);
 }
 
 .project {
