@@ -4,10 +4,10 @@ import user from "./user";
 import { format } from 'date-fns' //Dates
 import Sortable from 'sortablejs'; //Sorteable lists!
 
-//Today in 'yyyy-MM-dd':
-const currentDate = format(new Date(),'yyyy-MM-dd')
-
+const date = new Date();
+const currentDate = format(date,'yyyy-MM-dd');
 //Storage things: 
+//localStorage.clear() //Clean the local storage 
 let newUser;
 if (user.storageAvailable('localStorage')) {
     console.log('Aviliable local storage!');
@@ -22,12 +22,12 @@ showProjects(newUser);
 showTasks(newUser.projects[0]);
 
 const ul = document.querySelector('.tasks');
-let sortable = new Sortable(ul,{
+new Sortable(ul,{
     animation: 200,
     ghostClass:'ghost',
     onEnd: function(event){
-        let currProject = document.querySelector('.project-title').textContent;
-        currProject = newUser.projects.find(e=>e.name===currProject);
+        let currProjectName = document.querySelector('.project-title').textContent;
+        currProject = newUser.getProject(currProjectName);
         let arrayNodes = [...event.from.childNodes];
         let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id))
         currProject.sortTasks(arrayNodesIdx);
@@ -35,15 +35,30 @@ let sortable = new Sortable(ul,{
     }
 })
 
-function showProjects(user) {
+const projectsDiv = document.querySelector('.projects');
+new Sortable(projectsDiv,{
+    animation: 200,
+    ghostClass:'ghost',
+    onEnd: function(event){
+        let arrayNodes = [...event.from.childNodes];
+        let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id))
+        newUser.sortProjects(arrayNodesIdx);
+        showProjects(newUser);
+    }
+})
+
+function showProjects(currUser) {
     const div = document.querySelector('.projects');
     div.innerHTML = '';
-    for(let i = 0; i< user.projects.length;i++){
+    for(let i = 0; i< currUser.projects.length;i++){
         let project = document.createElement('h3');
+        project.id = i;
+        currUser.projects[i].idx = i;
         project.classList.add('project')
-        project.textContent = user.projects[i].name;  
-        project.addEventListener('click',showTasks.bind(this,user.projects[i]))
-        div.appendChild(project)
+        project.textContent = currUser.projects[i].name;  
+        project.addEventListener('click',showTasks.bind(this,currUser.projects[i]))
+        div.appendChild(project);
+        user.setUserData( 'User', newUser );
     }
 }
 
@@ -226,7 +241,7 @@ function acceptTask() {
     const p = document.querySelector('.task-error-msg');
 
     let currProject = document.querySelector('.project-title').textContent;
-    currProject = newUser.projects.find(e=>e.name===currProject);
+    currProject = newUser.getProject(currProject);
 
     let msg = currProject.addTask(new Task(title,description,priority,date)) //Return error mesage or "Done!"
     p.textContent = msg;

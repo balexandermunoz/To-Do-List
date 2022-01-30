@@ -2,6 +2,12 @@ import Task from "./tasks";
 import Project from "./projects";
 import { format } from 'date-fns' //Dates
 
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
 class user {
     constructor(){
         this.projects = []
@@ -20,17 +26,33 @@ class user {
         else return 'Done!'
     }
 
+    sortProjects(orderList){
+        if(orderList.length !== this.projects.length) return console.error("orderList no match whit quantity of tasks");
+        for(let i = 0; i<this.projects.length; i++){
+            this.projects[orderList[i]].idx = i;
+        }  
+        this.projects.sort((a,b) => a.idx - b.idx);
+    }
+
+    getProject(projectName){
+        return this.projects.find((project) => project.name === projectName)
+    }
+
     static createDefaultInstance(){
         //Initialize things with 1 User, 3 projects inside and one task for each project. 
-        const currentDate = format(new Date(),'yyyy-MM-dd');
+        const date = new Date();
+        const currentDate = format(date,'yyyy-MM-dd');
+        const treeDays = format(date.addDays(3),'yyyy-MM-dd');
+        const fiveDays = format(date.addDays(5),'yyyy-MM-dd');
+
         let newUser = new user();
-        const project1 = new Project('Project 1');
-        const project2 = new Project('Project 2');
-        const project3 = new Project('Project 3');
+        const project1 = new Project('General');
+        const project2 = new Project('Today');
+        const project3 = new Project('This week');
 
         const task1 = new Task('Example task 0', 'This is a example task','Normal',currentDate);
-        const task2 = new Task('Example task 1', 'This is a example task','Important', currentDate);
-        const task3 = new Task('Example task 2', 'This is a example task', 'Urgent', currentDate);
+        const task2 = new Task('Example task 1', 'This is a example task','Important', treeDays);
+        const task3 = new Task('Example task 2', 'This is a example task', 'Urgent', fiveDays);
 
         project1.addTask(task1);
         project1.addTask(task2);
@@ -75,11 +97,11 @@ class user {
     }
 
     static getUserData(keyUser){
+        //New user contain projects and task for each project, without methods
         let newUser = JSON.parse(localStorage.getItem(keyUser));
-        newUser = Object.assign(new user(), newUser);  //Give functions to newUser
-        newUser.projects.forEach( (project,idx) => newUser.projects[idx] = Object.assign(new Project(),project) );
-    
+        newUser = Object.assign(new user(), newUser);
         newUser.projects.forEach( (project,i) => {
+            newUser.projects[i] = Object.assign(new Project(),project)
             project.tasksArray.forEach( (task,j) => {
                 project.tasksArray[j] = Object.assign(new Task(), task)                
             })

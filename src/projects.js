@@ -1,5 +1,8 @@
+import { isToday, isThisWeek } from 'date-fns'
+
 class Project {
     constructor(name){
+        this.idx;
         this.name = name;
         this.tasksArray = []
     }
@@ -27,6 +30,20 @@ class Project {
         }  
         this.tasksArray.sort((a,b) => a.idx - b.idx);
     }
+
+    getTodayTasks(){
+        return this.tasks.filter((task) => {
+            const taskDate = new Date(task.getDateFormatted())
+            return isToday(toDate(taskDate))
+        })
+    }
+
+    getWeekTasks(){
+        return this.tasks.filter((task) => {
+            const taskDate = new Date(task.getDateFormatted())
+            return isThisWeek(subDays(toDate(taskDate), 1))
+          })
+        }
 }
 
 export default Project;

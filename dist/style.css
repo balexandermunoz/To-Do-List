@@ -61,6 +61,10 @@ ul {
     padding: 0 40px 0 40px;
 }
 
+ul:hover {
+    cursor: pointer;
+}
+
 .ghost {
     opacity: .5;
     background: #C8EBFB;
