@@ -1,3 +1,5 @@
+import { format,isToday,isThisWeek,toDate } from 'date-fns' //Dates
+
 class Task {
     constructor(name,description,priority,date){
         this.idx;
@@ -8,8 +10,18 @@ class Task {
         this.checked = false;
     }
 
+    todayTask(){ //Not work
+        let date = toDate(new Date(this.date))
+        return isToday(date)
+    }
+
     toggleCheck(){
         this.checked = !this.checked;
+    }
+
+    thisWeekTask(){
+        let date = toDate(new Date(this.date))
+        return isThisWeek(date)
     }
 }
 

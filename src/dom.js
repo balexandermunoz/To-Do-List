@@ -19,7 +19,6 @@ else {
 }
 
 showProjects(newUser.defaultProjects);
-console.log(newUser.projects)
 showProjects(newUser.projects);
 showTasks(newUser.defaultProjects[1]);
 
@@ -127,14 +126,16 @@ function modifyProject(projectTitle){
 function showTasks(project){
     const ul = document.querySelector('.tasks');
     const projectTitle = document.querySelector('.project-title');
+    const tasksList = project.tasksArray;
     projectTitle.textContent = project.name;
+
     ul.innerHTML = '';
-    for(let j = 0; j<project.tasksArray.length; j++){
+    for(let j = 0; j<tasksList.length; j++){
         const li = document.createElement('tr');
-        const priority = project.tasksArray[j].priority;
+        const priority = tasksList[j].priority;
         li.classList.add('task',`priority-${priority}`);
         li.id = j;
-        project.tasksArray[j].idx = j;
+        tasksList[j].idx = j;
 
         //Checkbox, title and description:
         const td1 = document.createElement('td');
@@ -143,16 +144,22 @@ function showTasks(project){
         const description = document.createElement('td');
 
         checkbox.type = 'checkbox';
-        checkbox.checked = project.tasksArray[j].checked;
+        checkbox.checked = tasksList[j].checked;
         checkbox.addEventListener('click',() => {
-            project.tasksArray[j].toggleCheck();
+            tasksList[j].toggleCheck();
             showTasks(project)
             });
         if(checkbox.checked) taskName.classList.add('checkedTask');
         else if (!checkbox.checked && taskName.classList.contains('checkedTask')) p.classList.remove('checkedTask');
-        taskName.textContent = project.tasksArray[j].name;
+        taskName.textContent = tasksList[j].name;
+        taskName.addEventListener('click',()=>{
+            displayAddTask(tasksList[j].name, tasksList[j].description, tasksList[j].priority, tasksList[j].date);
+        })
         description.classList.add('td1-description')
-        description.textContent = project.tasksArray[j].description;
+        description.textContent = tasksList[j].description;
+        description.addEventListener('click',()=>{
+            displayAddTask(tasksList[j].name, tasksList[j].description, tasksList[j].priority, tasksList[j].date);
+        })
         td1.append(checkbox,taskName,description);
 
         //Date and delete icon:
@@ -160,12 +167,12 @@ function showTasks(project){
         const date = document.createElement('p');
         const deleteIcon = document.createElement('img');
 
-        date.textContent = project.tasksArray[j].date;
+        date.textContent = tasksList[j].date;
         deleteIcon.classList.add('icon','deleteIcon')
         deleteIcon.src = 'images/delete2.png';
 
         deleteIcon.addEventListener('click',() => {
-             project.deleteTask(project.tasksArray[j]);
+             project.deleteTask(tasksList[j]);
              showTasks(project);
             });
 
@@ -249,13 +256,12 @@ function closeProject() {
     //Close the add project window
     const addProject = document.querySelector('.divAddProject');
     addProject.remove()
-    //this.parentNode.remove()
     const left = document.querySelector('.left');       //Left panel 
     left.insertBefore(buttonAdd(displayAddProject,'addProject'), left.firstChild);
 }
 
 //Tasks:
-function displayAddTask(){
+function displayAddTask(e,curTitle='',curDescription='',currPriority = 'none',currDate='none'){
     const addButton = document.querySelector('.addTask');
     addButton.remove();
 
@@ -268,15 +274,18 @@ function displayAddTask(){
     const title = document.createElement('textarea');
     title.classList.add('inputTitleTask')
     title.placeholder = "Title";
+    title.value = curTitle;
 
     const description = document.createElement('textarea');
     description.classList.add('inputDescriptionTask')
     description.placeholder = "Description";
+    description.value = curDescription
 
     const date = document.createElement('input');
     date.classList.add('input-date');
     date.type = 'date';
-    date.value = currentDate;
+    if(currDate === 'none') date.value = currentDate
+    else date.value = currDate
     date.min = currentDate;
 
     const p = document.createElement('p'); //This is for the error or check mesage
@@ -292,7 +301,9 @@ function displayAddTask(){
     urgentButton.type = 'radio';
     importatButton.type = 'radio';
     normalButton.type = 'radio';
-    normalButton.checked = true;
+    if (currPriority === 'Urgent') urgentButton.checked = true
+    else if (currPriority === 'Important') importatButton.checked = true
+    else normalButton.checked = true
 
     urgentButton.name = 'priority';
     importatButton.name = 'priority';
@@ -322,7 +333,10 @@ function acceptTask() {
 
     currProject = newUser.getProject(currProject);
 
-    let msg = currProject.addTask(new Task(title,description,priority,date)) //Return error mesage or "Done!"
+    let addingTask = new Task(title,description,priority,date)
+    let msg = currProject.addTask(addingTask) //Return error mesage or "Done!"
+    if(addingTask.todayTask()) newUser.getProject('Today').addTask(addingTask);
+    if(addingTask.thisWeekTask()) newUser.getProject('This week').addTask(addingTask);
     p.textContent = msg;
   
     if (msg !== 'Done!') return
