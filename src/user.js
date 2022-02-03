@@ -15,7 +15,7 @@ class user {
     }
 
     addProject(project){
-        let checking = this.checkProject(project);  //Return check message
+        let checking = this.checkProject(project.name);  //Return check message
         if (checking !== 'Done!') return checking
 
         if(project.defProject) this.defaultProjects.push(project)
@@ -23,10 +23,14 @@ class user {
         return checking
     }
 
-    checkProject(newProject){
-        if(newProject.name === '') return 'Hey! your project need a name'
-        else if (this.projects.some( (e)=> e.name === newProject.name )) return (newProject.name + ' already exist! ')
-        else if (this.defaultProjects.some( (e)=> e.name === newProject.name )) return (newProject.name + ' already exist! ')
+    removeProject(project){
+        this.projects.splice(project.idx,1);
+    }
+
+    checkProject(newProjectName){
+        if(newProjectName === '') return 'Hey! your project need a name'
+        else if (this.projects.some( (e)=> e.name === newProjectName )) return (newProjectName + ' already exist! ')
+        else if (this.defaultProjects.some( (e)=> e.name === newProjectName )) return (newProjectName + ' already exist! ')
 
         else return 'Done!'
     }

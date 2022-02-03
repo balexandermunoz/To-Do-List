@@ -177,7 +177,6 @@ td:hover {
 .ghost {
     border-radius: 20px;
     opacity: .5;
-    background: #C8EBFB;
 }
 
 .addTask {
@@ -197,8 +196,14 @@ td:hover {
     text-decoration: line-through;
 }
 
-.deleteIcon{
-    width: 15px;
+.icon{
+    width: 20px;
+    height: 20px;
+}
+
+.delete-icon {
+    width: 25px;
+    height: 25px;
 }
 
 .priority-Normal {
@@ -212,15 +217,28 @@ td:hover {
 }
 
 .project {
-    padding: 4px 10px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10px;
+    border-radius: 20px;
     text-align: left;
     transition: background-color 1s ease;
+}
+.project *{
+    padding: 0;
+    margin: 0;
 }
 
 .project:hover {
     border-radius: 20px;
     cursor: pointer;
     background-color: var(--main-color);    
+}
+
+.project-div1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .new_todo {

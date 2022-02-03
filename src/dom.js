@@ -19,6 +19,7 @@ else {
 }
 
 showProjects(newUser.defaultProjects);
+console.log(newUser.projects)
 showProjects(newUser.projects);
 showTasks(newUser.defaultProjects[1]);
 
@@ -28,11 +29,9 @@ new Sortable(ul,{
     ghostClass:'ghost',
     onEnd: function(event){
         let currProjectName = document.querySelector('.project-title').textContent;
-        console.log(currProjectName)
         let currProject = newUser.getProject(currProjectName);
         let arrayNodes = [...event.from.childNodes];
         let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id));
-        console.log(currProject)
         currProject.sortTasks(arrayNodesIdx);
         showTasks(currProject)
     }
@@ -40,6 +39,7 @@ new Sortable(ul,{
 
 const projectsDiv = document.querySelector('.projects');
 new Sortable(projectsDiv,{
+    group: 'projects',
     animation: 200,
     ghostClass:'ghost',
     onEnd: function(event){
@@ -52,18 +52,76 @@ new Sortable(projectsDiv,{
 
 function showProjects(projectsList) {
     let div = document.querySelector('.projects');
-    if(projectsList[0].defProject) div = document.querySelector('.default-projects');
     div.innerHTML = '';
+    if(projectsList.length <= 0) return
+    if(projectsList[0].defProject) div = document.querySelector('.default-projects');
     for(let i = 0; i< projectsList.length;i++){
-        let project = document.createElement('h3');
+        let project = document.createElement('div');
+        let projectTitle = document.createElement('h3');
         project.id = i;
         projectsList[i].idx = i;
         project.classList.add('project')
-        project.textContent = projectsList[i].name;  
+        projectTitle.textContent = projectsList[i].name;  
         project.addEventListener( 'click',showTasks.bind(this,projectsList[i]) );
+        project.append(projectTitle);
+        //If isnt a default project, add the button 
+        if(!projectsList[0].defProject){
+            const editIcon = document.createElement('img');
+            editIcon.classList.add('icon','editIcon')
+            editIcon.src = 'images/edit.png';
+            editIcon.addEventListener( 'click',()=>{
+                const div1  = document.createElement('div');
+                const newTitle = document.createElement('input');
+                const acceptButton = document.createElement('img');
+                const cancelButton = document.createElement('img');
+                const deleteButton = document.createElement('img');
+
+                div1.classList.add('project-div1')
+                newTitle.type = 'text';
+                newTitle.classList.add('inputProject');
+                newTitle.value = projectTitle.textContent;
+                acceptButton.src = 'images/Accept.png';
+                acceptButton.classList.add('icon');
+                acceptButton.addEventListener('click',()=>{
+                    let checking = newUser.checkProject(newTitle.value);
+                    if(checking==='Done!' || newTitle.value === projectsList[i].name){
+                        projectsList[i].name = newTitle.value;
+                        showProjects(projectsList);
+                    }
+                    else {
+                        alert(newTitle.value + ' already exist!')
+                    }
+                });
+
+                cancelButton.src = 'images/delete2.png';
+                cancelButton.classList.add('icon');
+                cancelButton.addEventListener('click',()=>showProjects(projectsList));
+
+                deleteButton.src = 'images/delete.png';
+                deleteButton.classList.add('icon','delete-icon');
+                deleteButton.addEventListener('click', ()=>{
+                    newUser.removeProject(projectsList[i]);
+                    showProjects(projectsList)
+                });
+
+                projectTitle.remove()
+                editIcon.remove()
+                div1.append(newTitle,acceptButton,cancelButton)
+                project.append(div1,deleteButton)
+                modifyProject(projectTitle)
+            })
+
+            project.append(editIcon);
+        }
+
         div.appendChild(project);
         user.setUserData( 'User', newUser );
     }
+}
+
+function modifyProject(projectTitle){
+    let currProject = newUser.getProject(projectTitle);
+    const divProject = document.getElementById('0')
 }
 
 function showTasks(project){
@@ -103,7 +161,7 @@ function showTasks(project){
         const deleteIcon = document.createElement('img');
 
         date.textContent = project.tasksArray[j].date;
-        deleteIcon.classList.add('deleteIcon')
+        deleteIcon.classList.add('icon','deleteIcon')
         deleteIcon.src = 'images/delete2.png';
 
         deleteIcon.addEventListener('click',() => {
@@ -261,7 +319,6 @@ function acceptTask() {
     const p = document.querySelector('.task-error-msg');
 
     let currProject = document.querySelector('.project-title').textContent;
-    console.log(currProject);
 
     currProject = newUser.getProject(currProject);
 

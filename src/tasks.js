@@ -10,7 +10,6 @@ class Task {
 
     toggleCheck(){
         this.checked = !this.checked;
-        console.log(this,this.checked)
     }
 }
 
