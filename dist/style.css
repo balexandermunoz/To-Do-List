@@ -12,6 +12,7 @@
   /* Scroll bar: */
   ::-webkit-scrollbar {
     width: 3px;
+    height: 5px;
   }
   
   /* Track */
@@ -44,7 +45,7 @@ body {
 
 header {
     background: var(--header-color);
-    padding: 1em 1em 1em 2em;
+    padding: 0em 1em 0em 2em;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -80,13 +81,17 @@ header img {
     background: var(--left-color);
     padding: 2em 0 2em 0;
     flex: 1 1 0;
-    min-width: 150px;
+    min-width: 200px;
     display: flex;
     flex-direction: column;
-    gap: 50px;
     height: 80vh;
     overflow-y: scroll;
 }
+
+.projects, .default-projects {
+    margin-left: 10px;
+}
+
 
 .inputProject {
     width: 50%;
@@ -170,6 +175,7 @@ td:hover {
 }
 
 .ghost {
+    border-radius: 20px;
     opacity: .5;
     background: #C8EBFB;
 }
@@ -208,10 +214,13 @@ td:hover {
 .project {
     padding: 4px 10px;
     text-align: left;
+    transition: background-color 1s ease;
 }
 
 .project:hover {
+    border-radius: 20px;
     cursor: pointer;
+    background-color: var(--main-color);    
 }
 
 .new_todo {
@@ -337,14 +346,16 @@ input::-webkit-datetime-edit-year-field:focus {
 }
 
 .add_btn {
-    padding: 5px;
+    padding: 8px;
+    margin: 0 20px;
     border-radius: 30px;
-    background-color: rgba(128, 128, 128, 0.466);
+    background-color: var(--left-color);
+    transition: background-color 1s ease;
 }
 
 .add_btn:hover {
     cursor: pointer;
-    background-color: rgb(128, 128, 128);
+    background-color: var(--main-color);
 }
 
 .add_btn img {

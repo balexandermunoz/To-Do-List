@@ -1,9 +1,10 @@
 import { isToday, isThisWeek } from 'date-fns'
 
 class Project {
-    constructor(name){
+    constructor(name,defProject = false){
         this.idx;
         this.name = name;
+        this.defProject = defProject;
         this.tasksArray = []
     }
 

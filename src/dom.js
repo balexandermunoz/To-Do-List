@@ -18,8 +18,9 @@ else {
     newUser = user.createDefaultInstance();
 }
 
-showProjects(newUser);
-showTasks(newUser.projects[0]);
+showProjects(newUser.defaultProjects);
+showProjects(newUser.projects);
+showTasks(newUser.defaultProjects[1]);
 
 const ul = document.querySelector('.tasks');
 new Sortable(ul,{
@@ -27,9 +28,11 @@ new Sortable(ul,{
     ghostClass:'ghost',
     onEnd: function(event){
         let currProjectName = document.querySelector('.project-title').textContent;
+        console.log(currProjectName)
         let currProject = newUser.getProject(currProjectName);
         let arrayNodes = [...event.from.childNodes];
-        let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id))
+        let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id));
+        console.log(currProject)
         currProject.sortTasks(arrayNodesIdx);
         showTasks(currProject)
     }
@@ -43,20 +46,21 @@ new Sortable(projectsDiv,{
         let arrayNodes = [...event.from.childNodes];
         let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id))
         newUser.sortProjects(arrayNodesIdx);
-        showProjects(newUser);
+        showProjects(newUser.projects);
     }
 })
 
-function showProjects(currUser) {
-    const div = document.querySelector('.projects');
+function showProjects(projectsList) {
+    let div = document.querySelector('.projects');
+    if(projectsList[0].defProject) div = document.querySelector('.default-projects');
     div.innerHTML = '';
-    for(let i = 0; i< currUser.projects.length;i++){
+    for(let i = 0; i< projectsList.length;i++){
         let project = document.createElement('h3');
         project.id = i;
-        currUser.projects[i].idx = i;
+        projectsList[i].idx = i;
         project.classList.add('project')
-        project.textContent = currUser.projects[i].name;  
-        project.addEventListener('click',showTasks.bind(this,currUser.projects[i]))
+        project.textContent = projectsList[i].name;  
+        project.addEventListener( 'click',showTasks.bind(this,projectsList[i]) );
         div.appendChild(project);
         user.setUserData( 'User', newUser );
     }
@@ -132,7 +136,7 @@ function displayAddProject() {
     addProjectButton.remove()  //Quit the button for a while
 
     const left = document.querySelector('.left');       //Left panel 
-    const projects = document.querySelector('.projects');   //Div for projects
+    const projects = document.querySelector('.default-projects');   //Div for projects
     
     const divAddProject = document.createElement('div');       //Create div element
     divAddProject.classList.add('divAddProject');
@@ -178,7 +182,7 @@ function acceptProject(){
 
     if (msg !== 'Done!') return
     else {
-        showProjects(newUser);
+        showProjects(newUser.projects);
         closeProject.call(this); //At the end, close project 
     }
 }
@@ -257,6 +261,8 @@ function acceptTask() {
     const p = document.querySelector('.task-error-msg');
 
     let currProject = document.querySelector('.project-title').textContent;
+    console.log(currProject);
+
     currProject = newUser.getProject(currProject);
 
     let msg = currProject.addTask(new Task(title,description,priority,date)) //Return error mesage or "Done!"

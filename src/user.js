@@ -10,20 +10,29 @@ Date.prototype.addDays = function(days) {
 
 class user {
     constructor(){
+        this.defaultProjects = [];
         this.projects = []
     }
 
     addProject(project){
         let checking = this.checkProject(project);  //Return check message
         if (checking !== 'Done!') return checking
-        this.projects.push(project)
+
+        if(project.defProject) this.defaultProjects.push(project)
+        else this.projects.push(project)
         return checking
     }
 
     checkProject(newProject){
         if(newProject.name === '') return 'Hey! your project need a name'
         else if (this.projects.some( (e)=> e.name === newProject.name )) return (newProject.name + ' already exist! ')
+        else if (this.defaultProjects.some( (e)=> e.name === newProject.name )) return (newProject.name + ' already exist! ')
+
         else return 'Done!'
+    }
+
+    getNumberOfDefProjects(){
+        return this.projects.filter( (project) => project.defProject).length;
     }
 
     sortProjects(orderList){
@@ -35,7 +44,11 @@ class user {
     }
 
     getProject(projectName){
-        return this.projects.find((project) => project.name === projectName)
+        let project;
+        //First serach in projects, If don't find anything, search in default projects
+        project = this.projects.find( (project) => project.name === projectName);
+        if(!project) project = this.defaultProjects.find( (project) => project.name === projectName);
+        return project
     }
 
     static createDefaultInstance(){
@@ -46,9 +59,10 @@ class user {
         const fiveDays = format(date.addDays(5),'yyyy-MM-dd');
 
         let newUser = new user();
-        const project1 = new Project('General');
-        const project2 = new Project('Today');
-        const project3 = new Project('This week');
+        const project1 = new Project('General',true);
+        const project2 = new Project('Today',true);
+        const project3 = new Project('This week',true);
+        const myProject = new Project('My project');
 
         const task1 = new Task('Example task 0', 'This is a example task','Normal',currentDate);
         const task2 = new Task('Example task 1', 'This is a example task','Important', treeDays);
@@ -59,10 +73,12 @@ class user {
         project1.addTask(task3);
         project2.addTask(task2);
         project3.addTask(task3);
+        myProject.addTask(task3);
 
         newUser.addProject(project1)
         newUser.addProject(project2)
         newUser.addProject(project3)
+        newUser.addProject(myProject)
         return newUser
     }
 
@@ -100,13 +116,18 @@ class user {
         //New user contain projects and task for each project, without methods
         let newUser = JSON.parse(localStorage.getItem(keyUser));
         newUser = Object.assign(new user(), newUser);
-        newUser.projects.forEach( (project,i) => {
-            newUser.projects[i] = Object.assign(new Project(),project)
+        user.reasignProjectClass(newUser.defaultProjects);
+        user.reasignProjectClass(newUser.projects);
+
+        return newUser;
+    }
+    static reasignProjectClass(projectsList){
+        projectsList.forEach( (project,i) => {
+            projectsList[i] = Object.assign(new Project(),project)
             project.tasksArray.forEach( (task,j) => {
                 project.tasksArray[j] = Object.assign(new Task(), task)                
             })
         });
-        return newUser;
     }
 
     static setUserData(keyUser,user){
