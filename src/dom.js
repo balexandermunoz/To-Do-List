@@ -27,7 +27,7 @@ new Sortable(ul,{
     ghostClass:'ghost',
     onEnd: function(event){
         let currProjectName = document.querySelector('.project-title').textContent;
-        currProject = newUser.getProject(currProjectName);
+        let currProject = newUser.getProject(currProjectName);
         let arrayNodes = [...event.from.childNodes];
         let arrayNodesIdx = arrayNodes.map( e => parseInt(e.id))
         currProject.sortTasks(arrayNodesIdx);
@@ -64,28 +64,39 @@ function showProjects(currUser) {
 
 function showTasks(project){
     const ul = document.querySelector('.tasks');
-    const title = document.querySelector('.project-title');
-    title.textContent = project.name;
+    const projectTitle = document.querySelector('.project-title');
+    projectTitle.textContent = project.name;
     ul.innerHTML = '';
     for(let j = 0; j<project.tasksArray.length; j++){
-        const li = document.createElement('li');
-        const checkbox = document.createElement('input');
-        const p = document.createElement('p');
-        const date = document.createElement('p');
-        const deleteIcon = document.createElement('img');
+        const li = document.createElement('tr');
         const priority = project.tasksArray[j].priority;
+        li.classList.add('task',`priority-${priority}`);
+        li.id = j;
         project.tasksArray[j].idx = j;
-    
+
+        //Checkbox, title and description:
+        const td1 = document.createElement('td');
+        const checkbox = document.createElement('input');
+        const taskName = document.createElement('b');
+        const description = document.createElement('td');
+
         checkbox.type = 'checkbox';
         checkbox.checked = project.tasksArray[j].checked;
-        if(checkbox.checked) p.classList.add('checkedTask');
-        else if (!checkbox.checked && p.classList.contains('checkedTask')) p.classList.remove('checkedTask');
-
         checkbox.addEventListener('click',() => {
             project.tasksArray[j].toggleCheck();
             showTasks(project)
             });
-        p.textContent = project.tasksArray[j].name;
+        if(checkbox.checked) taskName.classList.add('checkedTask');
+        else if (!checkbox.checked && taskName.classList.contains('checkedTask')) p.classList.remove('checkedTask');
+        taskName.textContent = project.tasksArray[j].name;
+        description.classList.add('td1-description')
+        description.textContent = project.tasksArray[j].description;
+        td1.append(checkbox,taskName,description);
+
+        //Date and delete icon:
+        const td2 = document.createElement('td');
+        const date = document.createElement('p');
+        const deleteIcon = document.createElement('img');
 
         date.textContent = project.tasksArray[j].date;
         deleteIcon.classList.add('deleteIcon')
@@ -95,9 +106,11 @@ function showTasks(project){
              project.deleteTask(project.tasksArray[j]);
              showTasks(project);
             });
-        li.classList.add('task',`priority-${priority}`);
-        li.id = j;  //For sort purposes
-        li.append(checkbox,p,date,deleteIcon);
+
+        td2.classList.add('td2')
+        td2.append(date,deleteIcon);
+
+        li.append(td1,td2);
         ul.appendChild(li);
 
         user.setUserData( 'User', newUser );
@@ -126,28 +139,28 @@ function displayAddProject() {
 
     const inputName = document.createElement('input');      //Create input element
     inputName.classList.add('inputProject');
-    inputName.placeholder = "New project";
-    divAddProject.appendChild(inputName);
+    inputName.placeholder = "Project name";
+    divAddProject.append(inputName,createButtons(acceptProject,closeProject,'addProject-button'));
 
-    divAddProject.appendChild(createButtons(acceptProject,closeProject,'addProject-buttons'));
     left.insertBefore(divAddProject, projects); //Display the input button before the projects
 }
 
 function createButtons(funct1,funct2,clase) {
     const divButtons = document.createElement('div');
-    divButtons.classList.add(clase);
-
     const p = document.createElement('p'); //To put a message
-    p.classList.add('project-error-msg')
+    p.classList.add('project-error-msg');
+    divButtons.classList.add('div-buttons')
     divButtons.appendChild(p);
 
-    const acceptButton = document.createElement('button');
-    acceptButton.textContent = 'Ok'
+    const acceptButton = document.createElement('img');
+    acceptButton.src = 'images/Accept.png';
+    acceptButton.classList.add(clase)
     acceptButton.addEventListener('click',funct1);       //Accept project 
     divButtons.appendChild(acceptButton)
 
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
+    const closeButton = document.createElement('img');
+    closeButton.src = 'images/delete2.png';
+    closeButton.classList.add(clase)
     closeButton.addEventListener('click',funct2);         // Close new project window
     divButtons.appendChild(closeButton);
     return divButtons;
@@ -208,6 +221,7 @@ function displayAddTask(){
     p.textContent = '';
     p.classList.add('task-error-msg');
 
+    const divPriorityDate = document.createElement('div');
     const divPriority = document.createElement('div');
     const urgentButton =  document.createElement('input');
     const importatButton = document.createElement('input');
@@ -225,10 +239,12 @@ function displayAddTask(){
     urgentButton.value = 'Urgent';
     importatButton.value = 'Important';
     normalButton.value = 'Normal';
+    divPriority.classList.add('div-priority')
+    divPriority.append(urgentButton,importatButton,normalButton);
+    divPriorityDate.classList.add('div-prioritydate');
+    divPriorityDate.append(divPriority,date);
 
-    divPriority.append(urgentButton,importatButton,normalButton,date)
-
-    div.append(title,description,divPriority,p,createButtons(acceptTask,closeTask,'acceptTask-buttons'));
+    div.append(title,description,divPriorityDate,p,createButtons(acceptTask,closeTask,'acceptTask-button'));
 
     main.insertBefore(div, toDos); //Insert the div in first place of the list
 }
