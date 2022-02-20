@@ -6,6 +6,7 @@ import user from './user';
 
 const date = new Date();
 const currentDate = format(date, 'yyyy-MM-dd');
+
 // Storage things:
 // localStorage.clear() //Clean the local storage
 let newUser;
@@ -77,7 +78,7 @@ function showProjects(projectsList) {
 
         div1.classList.add('project-div1');
         newTitle.type = 'text';
-        newTitle.classList.add('inputProject');
+        newTitle.classList.add('input-project');
         newTitle.value = projectTitle.textContent;
         acceptButton.src = 'images/Accept.png';
         acceptButton.classList.add('icon');
@@ -106,7 +107,6 @@ function showProjects(projectsList) {
         editIcon.remove();
         div1.append(newTitle, acceptButton, cancelButton);
         project.append(div1, deleteButton);
-        modifyProject(projectTitle);
       });
       project.append(editIcon);
     }
@@ -114,11 +114,6 @@ function showProjects(projectsList) {
     div.appendChild(project);
     user.setUserData('User', newUser);
   }
-}
-
-function modifyProject(projectTitle) {
-  const currProject = newUser.getProject(projectTitle);
-  const divProject = document.getElementById('0');
 }
 
 function showTasks(project) {
@@ -181,63 +176,28 @@ function showTasks(project) {
     li.append(td1, td2);
     ul.appendChild(li);
 
+    //When you add new task or project, save the data: 
     user.setUserData('User', newUser);
   }
 }
 
-function buttonAdd(funct, classe) {
-  const button = document.createElement('button');
-  const icon = document.createElement('img');
-  icon.src = 'images/Add-icon.png';
-  button.appendChild(icon);
-  button.classList.add('add_btn', classe);
-  button.addEventListener('click', funct);
-  return button;
-}
-
 function displayAddProject() {
-  const addProjectButton = document.querySelector('.addProject'); // Add project button
-  addProjectButton.remove(); // Quit the button for a while
+  const addProjectBtn = document.querySelector('.addProject');
+  const divAddProject = document.querySelector('.divAddProject');
+  const confirmProjectBtn = document.getElementById('accept-project-button');
+  const closeProjectBtn = document.getElementById('close-project');
 
-  const left = document.querySelector('.left'); // Left panel
-  const projects = document.querySelector('.default-projects'); // Div for projects
+  addProjectBtn.style.display = 'none';
+  divAddProject.style.display = 'block';
 
-  const divAddProject = document.createElement('div'); // Create div element
-  divAddProject.classList.add('divAddProject');
-
-  const inputName = document.createElement('input'); // Create input element
-  inputName.classList.add('inputProject');
-  inputName.placeholder = 'Project name';
-  divAddProject.append(inputName, createButtons(acceptProject, closeProject, 'addProject-button'));
-
-  left.insertBefore(divAddProject, projects); // Display the input button before the projects
-}
-
-function createButtons(funct1, funct2, clase) {
-  const divButtons = document.createElement('div');
-  const p = document.createElement('p'); // To put a message
-  p.classList.add('project-error-msg');
-  divButtons.classList.add('div-buttons');
-  divButtons.appendChild(p);
-
-  const acceptButton = document.createElement('img');
-  acceptButton.src = 'images/Accept.png';
-  acceptButton.classList.add(clase);
-  acceptButton.addEventListener('click', funct1); // Accept project
-  divButtons.appendChild(acceptButton);
-
-  const closeButton = document.createElement('img');
-  closeButton.src = 'images/delete2.png';
-  closeButton.classList.add(clase);
-  closeButton.addEventListener('click', funct2); // Close new project window
-  divButtons.appendChild(closeButton);
-  return divButtons;
+  confirmProjectBtn.addEventListener('click', acceptProject);
+  closeProjectBtn.addEventListener('click',closeProject)
 }
 
 function acceptProject() {
   // Accept project stuff: Include in project class and return
-  const name = document.querySelector('.inputProject').value;
-  const msg = newUser.addProject(new Project(name)); // Return error mesage or "Done!"
+  const name = document.querySelector('.input-project').value;
+  const msg = newUser.addProject(new Project(name));
   const div = document.querySelector('.divAddProject');
   const p = document.querySelector('.project-error-msg');
   p.textContent = msg;
@@ -251,38 +211,34 @@ function acceptProject() {
 
 function closeProject() {
   // Close the add project window
+  const addProjectBtn = document.querySelector('.addProject');
   const addProject = document.querySelector('.divAddProject');
-  addProject.remove();
-  const left = document.querySelector('.left'); // Left panel
-  left.insertBefore(buttonAdd(displayAddProject, 'addProject'), left.firstChild);
+
+  addProject.style.display = 'none';
+  addProjectBtn.style.display = 'block'; 
 }
 
 
 // Tasks:
 function displayAddTask(e,curTitle = '', curDescription = '', currPriority = 'none', currDate = 'none') {
-  const modal = document.getElementById("myModal");
-  const title = document.querySelector('.input-title');
-  const description = document.querySelector('.input-description');
-  const normalButton = document.querySelector('input[value="Normal"]');
-  const importantButton = document.querySelector('input[value="Important"]');
-  const urgentButton = document.querySelector('input[value="Urgent"]');
+  const radioButtons = document.querySelectorAll('input[type="radio"]');
   const date = document.querySelector('.input-date');
   const acceptButton = document.querySelector('#accept-task-button');
   const closeTaskButton = document.querySelector('#close-task');
 
-  modal.style.display = 'block';
-  title.value = curTitle;
-  description.value = curDescription;
+  document.getElementById("myModal").style.display = 'block';
+  document.querySelector('.input-title').value = curTitle;
+  document.querySelector('.input-description').value = curDescription;
+  document.querySelector('.task-error-msg').textContent = '';
 
   if (currDate === 'none') date.value = currentDate;
   else date.value = currDate;
   date.min = currentDate;
   
-  if (currPriority === 'Urgent') urgentButton.checked = true;
-  else if (currPriority === 'Important') importantButton.checked = true;
-  else normalButton.checked = true;
+  if (currPriority === 'Urgent') radioButtons[0].checked = true;
+  else if (currPriority === 'Important') radioButtons[1].checked = true;
+  else radioButtons[2].checked = true;
   
-
   acceptButton.addEventListener('click',acceptTask);
   closeTaskButton.addEventListener('click',closeTask)
 }

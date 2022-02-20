@@ -156,12 +156,16 @@ header img {
     overflow-y: scroll;
 }
 
+.divAddProject {
+    display: none;
+}
+
 .projects, .default-projects {
     margin-left: 10px;
 }
 
 
-.inputProject {
+.input-project {
     width: 50%;
     border: none;
     border-bottom: 2px solid black;
@@ -170,12 +174,12 @@ header img {
     transition: width .35s ease-in-out;
 }
 
-.inputProject:focus{
+.input-project:focus{
     border: none;
     width: 70%;
 }
 
-.addProject-button, .task-button{
+.project-button, .task-button{
     width: 40px;
     padding: 5px;
     margin: 5px 10px 0 10px;
@@ -184,7 +188,7 @@ header img {
     transition: background-color 1s ease;
 }
 
-.addProject-button:hover, .task-button:hover{
+.project-button:hover, .task-button:hover{
     cursor: pointer;
     background-color: white;
 }
