@@ -151,7 +151,7 @@ function showTasks(project) {
     else if (!checkbox.checked && taskName.classList.contains('checkedTask')) p.classList.remove('checkedTask');
     taskName.textContent = tasksList[j].name;
     taskName.addEventListener('click', () => {
-      displayAddTask(tasksList[j].name,
+      displayAddTask(this,tasksList[j].name,
         tasksList[j].description,
         tasksList[j].priority,
         tasksList[j].date,
@@ -159,9 +159,6 @@ function showTasks(project) {
     });
     description.classList.add('td1-description');
     description.textContent = tasksList[j].description;
-    description.addEventListener('click', () => {
-      displayAddTask(tasksList[j].name, tasksList[j].description, tasksList[j].priority, tasksList[j].date);
-    });
     td1.append(checkbox, taskName, description);
 
     // Date and delete icon:
@@ -260,75 +257,42 @@ function closeProject() {
   left.insertBefore(buttonAdd(displayAddProject, 'addProject'), left.firstChild);
 }
 
+
 // Tasks:
-function displayAddTask(e, curTitle = '', curDescription = '', currPriority = 'none', currDate = 'none') {
-  const addButton = document.querySelector('.addTask');
-  addButton.remove();
+function displayAddTask(e,curTitle = '', curDescription = '', currPriority = 'none', currDate = 'none') {
+  const modal = document.getElementById("myModal");
+  const title = document.querySelector('.input-title');
+  const description = document.querySelector('.input-description');
+  const normalButton = document.querySelector('input[value="Normal"]');
+  const importantButton = document.querySelector('input[value="Important"]');
+  const urgentButton = document.querySelector('input[value="Urgent"]');
+  const date = document.querySelector('.input-date');
+  const acceptButton = document.querySelector('#accept-task-button');
+  const closeTaskButton = document.querySelector('#close-task');
 
-  const toDos = document.querySelector('.tasks');
-  const main = document.querySelector('main'); // Append some things in the main
-
-  const div = document.createElement('div');
-  div.classList.add('new_todo');
-
-  const title = document.createElement('textarea');
-  title.classList.add('inputTitleTask');
-  title.placeholder = 'Title';
+  modal.style.display = 'block';
   title.value = curTitle;
-
-  const description = document.createElement('textarea');
-  description.classList.add('inputDescriptionTask');
-  description.placeholder = 'Description';
   description.value = curDescription;
 
-  const date = document.createElement('input');
-  date.classList.add('input-date');
-  date.type = 'date';
   if (currDate === 'none') date.value = currentDate;
   else date.value = currDate;
   date.min = currentDate;
-
-  const p = document.createElement('p'); // This is for the error or check mesage
-  p.textContent = '';
-  p.classList.add('task-error-msg');
-
-  const divPriorityDate = document.createElement('div');
-  const divPriority = document.createElement('div');
-  const urgentButton = document.createElement('input');
-  const importatButton = document.createElement('input');
-  const normalButton = document.createElement('input');
-
-  urgentButton.type = 'radio';
-  importatButton.type = 'radio';
-  normalButton.type = 'radio';
+  
   if (currPriority === 'Urgent') urgentButton.checked = true;
-  else if (currPriority === 'Important') importatButton.checked = true;
+  else if (currPriority === 'Important') importantButton.checked = true;
   else normalButton.checked = true;
+  
 
-  urgentButton.name = 'priority';
-  importatButton.name = 'priority';
-  normalButton.name = 'priority';
-
-  urgentButton.value = 'Urgent';
-  importatButton.value = 'Important';
-  normalButton.value = 'Normal';
-  divPriority.classList.add('div-priority');
-  divPriority.append(urgentButton, importatButton, normalButton);
-  divPriorityDate.classList.add('div-prioritydate');
-  divPriorityDate.append(divPriority, date);
-
-  div.append(title, description, divPriorityDate, p, createButtons(acceptTask, closeTask, 'acceptTask-button'));
-
-  main.insertBefore(div, toDos); // Insert the div in first place of the list
+  acceptButton.addEventListener('click',acceptTask);
+  closeTaskButton.addEventListener('click',closeTask)
 }
 
 function acceptTask() {
-  const title = document.querySelector('.inputTitleTask').value;
-  const description = document.querySelector('.inputDescriptionTask').value;
+  const title = document.querySelector('.input-title').value;
+  const description = document.querySelector('.input-description').value;
   const priority = document.querySelector('input[name="priority"]:checked').value;
   const date = document.querySelector('input[type="date"]').value;
   const p = document.querySelector('.task-error-msg');
-
   let currProject = document.querySelector('.project-title').textContent;
 
   currProject = newUser.getProject(currProject);
@@ -346,16 +310,8 @@ function acceptTask() {
 }
 
 function closeTask() {
-  const addTask = document.querySelector('.new_todo'); // Remove the window task
-  addTask.remove();
-
-  const main = document.querySelector('main');
-  const toDos = document.querySelector('.tasks');
-
-  const button = document.createElement('button');
-
-  button.classList.add('add_btn', 'addTask');
-  main.insertBefore(buttonAdd(displayAddTask, 'addTask'), toDos);
+  const modal = document.getElementById("myModal");
+  modal.style.display = 'none';
 }
 
 export { displayAddTask, displayAddProject };

@@ -1,10 +1,19 @@
 import { displayAddTask, displayAddProject } from './dom';
 
 const addProjectButton = document.querySelector('.addProject'); // Add project button
+const addTodoButton = document.querySelector('.addTask');
+const modal = document.getElementById("myModal");
+
 addProjectButton.addEventListener('click', displayAddProject);
 
-const addTodoButton = document.querySelector('.addTask'); // Add todo button
 addTodoButton.addEventListener('click', displayAddTask);
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
 
 // Responsive things:
 // Info button:

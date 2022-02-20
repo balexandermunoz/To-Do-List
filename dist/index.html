@@ -57,6 +57,28 @@
       <h5>The Odin Project .</h5> 
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<!-- The Modal -->
+<div id="myModal" class="modal">
+      <div class="modal-content">
+        <textarea class="input-title" placeholder="Title"></textarea>
+        <textarea class="input-description" placeholder="Description"></textarea>
+
+        <div class="div-prioritydate">
+          <div class="div-priority">
+            <input type="radio" name="priority" value="Urgent">
+            <input type="radio" name="priority" value="Important">
+            <input type="radio" name="priority" value="Normal">
+          </div>
+          <input type="date" class="input-date">
+        </div>
+        <p class="task-error-msg"></p> <!-- Error mesage -->
+        <div class="buttons">
+          <img src="images/Accept.png" alt="Accept Icon" class="task-button" id="accept-task-button">
+          <img src="images/delete2.png" alt="Delete Icon" class="task-button" id="close-task">
+        </div>
+      </div>
+</div>
+<!-- /Modal -->
+
   </body>
 </html>
