@@ -12,18 +12,26 @@
   /* Modal */
 
   .modal {
-    display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 100; /* Sit on top */
     padding-top: 25vh; /* Location of the box */
     left: 0;
-    top: 0;
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    background-color: rgba(0, 0, 0, 0); /* Fallback color */
+
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.4s 0.1s, opacity 0.4s 0.1s,background-color 0.1s;
   }
+
+.modal.show {
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    transform: scale(1);
+    opacity: 1;
+    transition: transform 0.5s, opacity 0.5s,background-color 0.5s 0.4s ;
+}
 
   .modal-content {
     position: relative;
@@ -38,22 +46,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    -webkit-animation-name: animatetop;
-    -webkit-animation-duration: 0.4s;
-    animation-name: animatetop;
-    animation-duration: 0.4s
-  }
-
-  /* Add Animation */
-@-webkit-keyframes animatetop {
-    from {top:-300px; opacity:0} 
-    to {top:0; opacity:1}
-  }
-  
-  @keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
   }
 
   .modal-content>*, .input-date{
@@ -104,6 +96,8 @@
 }
 
 body {
+    padding: 0;
+    margin: 0;
     background: #13141b;
     text-align: center;
     display: flex;
@@ -118,6 +112,7 @@ header {
     align-items: center;
     flex-wrap: wrap;
     gap: 0px;
+    z-index: 10;
 }
 
 .button-toggle-left {
@@ -152,7 +147,6 @@ header img {
     min-width: 200px;
     display: flex;
     flex-direction: column;
-    height: 80vh;
     overflow-y: scroll;
 }
 
@@ -446,6 +440,10 @@ footer {
     font-size: 15px;
 }
 
+footer > h5 {
+    margin: 0;
+}
+
 
 /* Style all social media icons */
 .fa {
@@ -489,11 +487,11 @@ footer {
     /*Remove left content*/
       .left {
         display: none;
-        position: fixed;
+        position: absolute;
 
         z-index: 1;
-        padding-top: 0px;
-        height: 78%;
+        padding-top: 10px;
+        height: 77.5vh;
         overflow: auto;
         background-color: #ddddddec;
     }

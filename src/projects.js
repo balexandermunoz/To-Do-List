@@ -15,6 +15,13 @@ class Project {
     return checking;
   }
 
+  modifyTask(idx,newTask){
+    const checking = this.checkTask(newTask);
+    if (checking !== 'Done!') return checking;
+    this.tasksArray[idx] = newTask;
+    return checking
+  }
+
   deleteTask(task) {
     this.tasksArray.splice(task.idx, 1);
   }

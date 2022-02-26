@@ -3,6 +3,7 @@ import Sortable from 'sortablejs'; // Sorteable lists!
 import Task from './tasks';
 import Project from './projects';
 import user from './user';
+import { id } from 'date-fns/locale';
 
 const date = new Date();
 const currentDate = format(date, 'yyyy-MM-dd');
@@ -150,8 +151,9 @@ function showTasks(project) {
         tasksList[j].description,
         tasksList[j].priority,
         tasksList[j].date,
+        j
       );
-    });
+    },{once:true});
     description.classList.add('td1-description');
     description.textContent = tasksList[j].description;
     td1.append(checkbox, taskName, description);
@@ -186,6 +188,8 @@ function displayAddProject() {
   const divAddProject = document.querySelector('.divAddProject');
   const confirmProjectBtn = document.getElementById('accept-project-button');
   const closeProjectBtn = document.getElementById('close-project');
+  const p = document.querySelector('.project-error-msg');
+  p.textContent = '';
 
   addProjectBtn.style.display = 'none';
   divAddProject.style.display = 'block';
@@ -220,16 +224,21 @@ function closeProject() {
 
 
 // Tasks:
-function displayAddTask(e,curTitle = '', curDescription = '', currPriority = 'none', currDate = 'none') {
+function displayAddTask(e,curTitle = '', curDescription = '', currPriority = 'none', currDate = 'none', idx='none') {
+  const modal = document.getElementById("myModal");
+  const title = document.querySelector('.input-title');
+  const description = document.querySelector('.input-description');
+
   const radioButtons = document.querySelectorAll('input[type="radio"]');
   const date = document.querySelector('.input-date');
   const acceptButton = document.querySelector('#accept-task-button');
   const closeTaskButton = document.querySelector('#close-task');
+  const p = document.querySelector('.task-error-msg');
 
-  document.getElementById("myModal").style.display = 'block';
-  document.querySelector('.input-title').value = curTitle;
-  document.querySelector('.input-description').value = curDescription;
-  document.querySelector('.task-error-msg').textContent = '';
+  modal.classList.add('show');
+  title.value = curTitle;
+  description.value = curDescription;
+  p.textContent = '';
 
   if (currDate === 'none') date.value = currentDate;
   else date.value = currDate;
@@ -239,35 +248,41 @@ function displayAddTask(e,curTitle = '', curDescription = '', currPriority = 'no
   else if (currPriority === 'Important') radioButtons[1].checked = true;
   else radioButtons[2].checked = true;
   
-  acceptButton.addEventListener('click',acceptTask);
+  function triggerAcceptTask(){
+    acceptTask(idx)
+  }
+  acceptButton.addEventListener('click',triggerAcceptTask);
   closeTaskButton.addEventListener('click',closeTask)
-}
 
-function acceptTask() {
-  const title = document.querySelector('.input-title').value;
-  const description = document.querySelector('.input-description').value;
-  const priority = document.querySelector('input[name="priority"]:checked').value;
-  const date = document.querySelector('input[type="date"]').value;
-  const p = document.querySelector('.task-error-msg');
-  let currProject = document.querySelector('.project-title').textContent;
+  function acceptTask(idx='none') {
+    const checkedRadioBtn = document.querySelector('input[name="priority"]:checked');
+    const currProject = newUser.getProject(document.querySelector('.project-title').textContent);  
+    const addingTask = new Task(title.value, description.value, checkedRadioBtn.value, date.value);
+  
+    let msg;
+    if(idx === 'none') msg = currProject.addTask(addingTask);
+    else msg = currProject.modifyTask(idx,addingTask);
+  
+    if(addingTask.todayTask()) newUser.getProject('Today').addTask(addingTask);
+    if(addingTask.thisWeekTask()) newUser.getProject('This week').addTask(addingTask);
+    p.textContent = msg;
+  
+    if (msg !== 'Done!'){ 
+      const acceptButton = document.querySelector('#accept-task-button');
+      if(idx==='none') acceptButton.addEventListener('click',() => acceptTask(), {once: true});
+      else acceptButton.addEventListener('click',() => acceptTask(idx), {once: true});
+      return
+    };
+  
+    showTasks(currProject);
+    closeTask();
+  }
+  
+  function closeTask() {
+    modal.classList.remove('show')
+    acceptButton.removeEventListener('click',triggerAcceptTask);
+  }
 
-  currProject = newUser.getProject(currProject);
-
-  const addingTask = new Task(title, description, priority, date);
-  const msg = currProject.addTask(addingTask); // Return error mesage or "Done!"
-  if (addingTask.todayTask()) newUser.getProject('Today').addTask(addingTask);
-  if (addingTask.thisWeekTask()) newUser.getProject('This week').addTask(addingTask);
-  p.textContent = msg;
-
-  if (msg !== 'Done!') return;
-
-  showTasks(currProject);
-  closeTask();
-}
-
-function closeTask() {
-  const modal = document.getElementById("myModal");
-  modal.style.display = 'none';
 }
 
 export { displayAddTask, displayAddProject };
