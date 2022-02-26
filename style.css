@@ -9,6 +9,66 @@
     --normal-color: rgba(50, 220, 64, 0.6);
   }
 
+  /* Modal */
+
+  .modal {
+    position: fixed; /* Stay in place */
+    z-index: 100; /* Sit on top */
+    padding-top: 25vh; /* Location of the box */
+    left: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0); /* Fallback color */
+
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.4s 0.1s, opacity 0.4s 0.1s,background-color 0.1s;
+  }
+
+.modal.show {
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    transform: scale(1);
+    opacity: 1;
+    transition: transform 0.5s, opacity 0.5s,background-color 0.5s 0.4s ;
+}
+
+  .modal-content {
+    position: relative;
+    background-color: var(--main-color);
+    margin: auto;
+    padding: 0;
+    border: 2px solid var(--header-color);
+    border-radius: 10px;
+    padding: 10px;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-content>*, .input-date{
+      color: #000;
+  }
+  
+  /* The Close Button */
+  .close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* /Modal */
+
   /* Scroll bar: */
   ::-webkit-scrollbar {
     width: 3px;
@@ -36,6 +96,8 @@
 }
 
 body {
+    padding: 0;
+    margin: 0;
     background: #13141b;
     text-align: center;
     display: flex;
@@ -50,6 +112,7 @@ header {
     align-items: center;
     flex-wrap: wrap;
     gap: 0px;
+    z-index: 10;
 }
 
 .button-toggle-left {
@@ -84,8 +147,11 @@ header img {
     min-width: 200px;
     display: flex;
     flex-direction: column;
-    height: 80vh;
     overflow-y: scroll;
+}
+
+.divAddProject {
+    display: none;
 }
 
 .projects, .default-projects {
@@ -93,7 +159,7 @@ header img {
 }
 
 
-.inputProject {
+.input-project {
     width: 50%;
     border: none;
     border-bottom: 2px solid black;
@@ -102,12 +168,12 @@ header img {
     transition: width .35s ease-in-out;
 }
 
-.inputProject:focus{
+.input-project:focus{
     border: none;
     width: 70%;
 }
 
-.addProject-button, .acceptTask-button{
+.project-button, .task-button{
     width: 40px;
     padding: 5px;
     margin: 5px 10px 0 10px;
@@ -116,16 +182,16 @@ header img {
     transition: background-color 1s ease;
 }
 
-.addProject-button:hover, .acceptTask-button:hover{
+.project-button:hover, .task-button:hover{
     cursor: pointer;
     background-color: white;
 }
 
-.acceptTask-button {
+.task-button {
     background-color: white;
 }
 
-.acceptTask-button:hover {
+.task-button:hover {
     background-color: var(--left-color);
 }
 
@@ -241,23 +307,12 @@ td:hover {
     gap: 10px;
 }
 
-.new_todo {
-    width: 80%;
-    background-color: var(--main-color);
-    border: 2px solid var(--header-color);
-    border-radius: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 textarea {
     resize: none;
     border-radius: 10px;
   }
 
-.inputTitleTask{
+.input-title{
     margin: 20px 0;
     border: none;
     border-bottom: 2px solid var(--left-color);
@@ -266,7 +321,7 @@ textarea {
     transition: width .5s ease;
 }
 
-.inputDescriptionTask {
+.input-description {
     border: none;
     border-bottom: 2px solid var(--left-color);
     width: 80%;
@@ -274,8 +329,8 @@ textarea {
     transition: width .5s ease;
 }
 
-.inputTitleTask:focus,
-.inputDescriptionTask:focus {
+.input-title:focus,
+.input-description:focus {
     outline-style: none;
     width: 90%;
     border: 2px solid rgba(0, 0, 0, 0.479);
@@ -385,6 +440,10 @@ footer {
     font-size: 15px;
 }
 
+footer > h5 {
+    margin: 0;
+}
+
 
 /* Style all social media icons */
 .fa {
@@ -428,11 +487,11 @@ footer {
     /*Remove left content*/
       .left {
         display: none;
-        position: fixed;
+        position: absolute;
 
         z-index: 1;
-        padding-top: 0px;
-        height: 78%;
+        padding-top: 10px;
+        height: 77.5vh;
         overflow: auto;
         background-color: #ddddddec;
     }
